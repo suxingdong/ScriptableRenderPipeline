@@ -20,6 +20,7 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/ScreenSpaceLighting/ScreenSpaceLighting.hlsl"
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Builtin/BuiltinData.hlsl"
@@ -48,6 +49,7 @@
     RW_TEXTURE2D(float4, _SsrLightingTextureRW); // ShaderVariablesScreenSpaceLighting.hlsl already pulls in a non-RW _SsrLightingTexture
 #endif
 
+    TEXTURE2D(              _SsrClearCoatMaskTexture);
     StructuredBuffer<int2>  _SsrDepthPyramidMipLevelOffsets;
 
 CBUFFER_START(UnityScreenSpaceReflections)
@@ -107,7 +109,9 @@ void ScreenSpaceReflectionsTracing(uint2 positionSS : SV_DispatchThreadID)
     NormalData normalData;
     DecodeFromNormalBuffer(positionSS, normalData);
     float3 N         = normalData.normalWS;
-    float  roughness = normalData.perceptualRoughness;
+    // Override the roughness by the clearcoat value of this is a clear coat
+    float4 coatMask = _SsrClearCoatMaskTexture[positionSS];
+    float  roughness = HasClearCoatMask(coatMask) ? CLEAR_COAT_PERCEPTUAL_ROUGHNESS : normalData.perceptualRoughness;
 
     // Ref. #1: Michal Drobot - Quadtree Displacement Mapping with Height Blending.
     // Ref. #2: Yasin Uludag  - Hi-Z Screen-Space Cone-Traced Reflections.
@@ -313,7 +317,9 @@ void ScreenSpaceReflectionsReprojection(uint2 positionSS : SV_DispatchThreadID)
     // Load roughness.
     NormalData normalData;
     DecodeFromNormalBuffer(positionSS, normalData);
-    float  roughness = normalData.perceptualRoughness;
+    // Override the roughness by the clearcoat value of this is a clear coat
+    float4 coatMask = _SsrClearCoatMaskTexture[positionSS];
+    float  roughness = HasClearCoatMask(coatMask) ? CLEAR_COAT_PERCEPTUAL_ROUGHNESS : normalData.perceptualRoughness;
 
     // TODO: filtering is quite awful. Needs to be non-Gaussian, bilateral and anisotropic.
     float  mipLevel = lerp(0, _SsrDepthPyramidMaxMip, roughness);
