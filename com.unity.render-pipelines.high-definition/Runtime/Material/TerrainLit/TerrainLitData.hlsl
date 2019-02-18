@@ -32,8 +32,11 @@ CBUFFER_START(UnityTerrain)
 CBUFFER_END
 
 #ifdef UNITY_INSTANCING_ENABLED
-TEXTURE2D(_TerrainHeightmapTexture);
-TEXTURE2D(_TerrainNormalmapTexture);
+    TEXTURE2D(_TerrainHeightmapTexture);
+    TEXTURE2D(_TerrainNormalmapTexture);
+    #ifdef ENABLE_TERRAIN_PERPIXEL_NORMAL
+        SAMPLER(sampler_TerrainNormalmapTexture);
+    #endif
 #endif
 
 // Declare distortion variables just to make the code compile with the Debug Menu.
@@ -120,7 +123,7 @@ void GetSurfaceAndBuiltinData(inout FragInputs input, float3 V, inout PositionIn
         // Also terrain's tangent calculation was wrong in a left handed system because I used `cross((0,0,1), terrainNormalOS)`. It points to the wrong direction as negative X.
         // Therefore all the 4 xyzw components of the tangent needs to be flipped to correct the tangent frame.
         // (See ApplyMeshModification in TerrainLitDataMeshModification.hlsl)
-        float3 normalOS = SAMPLE_TEXTURE2D(_TerrainNormalmapTexture, s_linear_clamp_sampler, (input.texCoord0.xy + 0.5f) * _TerrainHeightmapRecipSize.xy).rgb * 2 - 1;
+        float3 normalOS = SAMPLE_TEXTURE2D(_TerrainNormalmapTexture, sampler_TerrainNormalmapTexture, (input.texCoord0.xy + 0.5f) * _TerrainHeightmapRecipSize.xy).rgb * 2 - 1;
         float3 normalWS = mul((float3x3)GetObjectToWorldMatrix(), normalOS);
         float4 tangentWS;
         tangentWS.xyz = cross(normalWS, GetObjectToWorldMatrix()._13_23_33);

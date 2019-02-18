@@ -89,12 +89,6 @@ Shader "Hidden/HDRP/TerrainLit_Basemap"
             #pragma multi_compile DECALS_OFF DECALS_3RT DECALS_4RT
             #pragma multi_compile _ LIGHT_LAYERS
 
-            #ifndef DEBUG_DISPLAY
-                // When we have alpha test, we will force a depth prepass so we always bypass the clip instruction in the GBuffer
-                // Don't do it with debug display mode as it is possible there is no depth prepass in this case
-                #define SHADERPASS_GBUFFER_BYPASS_ALPHA_TEST
-            #endif
-
             #define SHADERPASS SHADERPASS_GBUFFER
             #include "TerrainLit_Basemap.ShaderVariables.hlsl"
             #include "TerrainLitTemplate.hlsl"
