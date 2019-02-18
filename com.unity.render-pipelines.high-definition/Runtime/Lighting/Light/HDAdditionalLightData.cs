@@ -174,7 +174,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
         public bool displayAreaLightEmissiveMesh = false;
 
         // Optional cookie for rectangular area lights
-        public Texture2D areaLightCookie = null;
+        public Texture areaLightCookie = null;
 
         [Range(0.0f, 179.0f)]
         public float areaLightShadowCone = 150.0f;
@@ -799,6 +799,8 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 case LightType.Rectangle: // Rectangle by default when light is created
                     lightData.lightUnit = LightUnit.Lumen;
                     lightData.intensity = k_DefaultAreaLightIntensity;
+                    // Disable shadows for area lights as it's not yet supported
+                    light.shadows = LightShadows.None;
                     break;
                 case LightType.Point:
                 case LightType.Spot:
