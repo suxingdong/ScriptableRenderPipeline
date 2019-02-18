@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [6.3.0] - 2019-XX-XX
 ### Fixed
-- Fixed the Transform node so going from Tangent Space to any other space works as expected.
+- Fixed the Transform node, so going from Tangent Space to any other space now works as expected.
 
 ## [6.2.0] - 2019-02-15
 ### Fixed
