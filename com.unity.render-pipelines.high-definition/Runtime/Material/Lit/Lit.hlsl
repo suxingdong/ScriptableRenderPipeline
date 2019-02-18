@@ -1603,12 +1603,7 @@ DirectLighting EvaluateBSDF_Rect(   LightLoopContext lightLoopContext,
     int rayTracedAreaShadowIndex =  -lightData.contactShadowIndex;
     if( (_RaytracedAreaShadow == 1 && rayTracedAreaShadowIndex >= 0))
     {
-        float4 areaShadow = LOAD_TEXTURE2D_ARRAY(_AreaShadowTexture, posInput.positionSS, lightData.shadowIndex);
-        lighting.diffuse *= areaShadow.xyz;
-        lighting.specular *= areaShadow.xyz;
-        float areaShadow = LOAD_TEXTURE2D_ARRAY(_AreaShadowTexture, posInput.positionSS, rayTracedAreaShadowIndex).x;
-        lighting.diffuse *= areaShadow;
-        lighting.specular *= areaShadow;
+        shadow = LOAD_TEXTURE2D_ARRAY(_AreaShadowTexture, posInput.positionSS, rayTracedAreaShadowIndex).x;
     }
     else
 #endif // ENABLE_RAYTRACING
@@ -1623,10 +1618,11 @@ DirectLighting EvaluateBSDF_Rect(   LightLoopContext lightLoopContext,
 #endif
             shadow = lerp(shadowMask, shadow, lightData.shadowDimmer);
 
-            lighting.diffuse *= shadow;
-            lighting.specular *= shadow;
 #endif
     }
+    lighting.diffuse *= shadow;
+    lighting.specular *= shadow;
+
 
 #endif // LIT_DISPLAY_REFERENCE_AREA
 
