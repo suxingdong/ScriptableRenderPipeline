@@ -102,6 +102,10 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             public readonly GUIContent blockerSampleCount = new GUIContent("Blocker Sample Count", "Sample count HDRP uses to determine the size of the blocker.");
             public readonly GUIContent filterSampleCount = new GUIContent("Filter Sample Count");
             public readonly GUIContent minFilterSize = new GUIContent("Minimal size of the filter");
+            public readonly GUIContent areaLightShadowCone = new GUIContent("Shadow Cone", "Aperture of the cone used for shadowing the area light.");
+#if ENABLE_RAYTRACING
+            public readonly GUIContent useRayTracedShadows = new GUIContent("Use Ray traced shadows", "If selected, ray traced shadows are used in place of rasterized ones");
+#endif
 
             // Very high shadow settings
             public readonly GUIContent lightAngle = new GUIContent("Light Angle");

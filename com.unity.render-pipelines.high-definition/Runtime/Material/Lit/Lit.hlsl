@@ -32,6 +32,8 @@
 // Uncomment this to get speed (to measure), let it comment to get quality
 // #define FORWARD_MATERIAL_READ_FROM_WRITTEN_NORMAL_BUFFER
 
+#define RASTERIZED_AREA_LIGHT_SHADOWS 1
+
 //-----------------------------------------------------------------------------
 // Texture and constant buffer declaration
 //-----------------------------------------------------------------------------
@@ -1582,14 +1584,49 @@ DirectLighting EvaluateBSDF_Rect(   LightLoopContext lightLoopContext,
 
     }
 
-#ifdef ENABLE_RAYTRACING
-    if(_RaytracedAreaShadow == 1 && lightData.shadowIndex != -1)
+    // TODO_FCC: Move above the shadow bit so that it will skip computation if fully in shadow.
+    // TODO: Ray traced shadows don't support shadow masks yet. 
+#if RASTERIZED_AREA_LIGHT_SHADOWS
+    float  shadow = 1.0;
+    float  shadowMask = 1.0;
+#ifdef SHADOWS_SHADOWMASK
+    // shadowMaskSelector.x is -1 if there is no shadow mask
+    // Note that we override shadow value (in case we don't have any dynamic shadow)
+    shadow = shadowMask = (lightData.shadowMaskSelector.x >= 0.0) ? dot(BUILTIN_DATA_SHADOW_MASK, lightData.shadowMaskSelector) : 1.0;
+#endif
+
+#endif
+
+#if SHADEROPTIONS_RAYTRACING == 1 && (SHADERPASS == SHADERPASS_DEFERRED_LIGHTING)
+    // We are using the contact shadow index for area light shadow index in case of ray tracing.
+    // This should be safe as contact shadows are disabled in area lights and contactShadowIndex
+    int rayTracedAreaShadowIndex =  -lightData.contactShadowIndex;
+    if( (_RaytracedAreaShadow == 1 && rayTracedAreaShadowIndex >= 0))
     {
         float4 areaShadow = LOAD_TEXTURE2D_ARRAY(_AreaShadowTexture, posInput.positionSS, lightData.shadowIndex);
         lighting.diffuse *= areaShadow.xyz;
         lighting.specular *= areaShadow.xyz;
+        float areaShadow = LOAD_TEXTURE2D_ARRAY(_AreaShadowTexture, posInput.positionSS, rayTracedAreaShadowIndex).x;
+        lighting.diffuse *= areaShadow;
+        lighting.specular *= areaShadow;
     }
+    else
+#endif // ENABLE_RAYTRACING
+        if (lightData.shadowIndex != -1)
+    {
+#if RASTERIZED_AREA_LIGHT_SHADOWS
+            // lightData.positionRWS now contains the Light vector. 
+            shadow = GetAreaLightAttenuation(lightLoopContext.shadowContext, posInput.positionSS, posInput.positionWS, bsdfData.normalWS, lightData.shadowIndex, normalize(lightData.positionRWS), length(lightData.positionRWS));
+#ifdef SHADOWS_SHADOWMASK
+            // See comment for punctual light shadow mask
+            shadow = lightData.nonLightMappedOnly ? min(shadowMask, shadow) : shadow;
 #endif
+            shadow = lerp(shadowMask, shadow, lightData.shadowDimmer);
+
+            lighting.diffuse *= shadow;
+            lighting.specular *= shadow;
+#endif
+    }
 
 #endif // LIT_DISPLAY_REFERENCE_AREA
 
