@@ -152,7 +152,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                             CED.Conditional((serialized, owner) => serialized.editorLightShape != LightShape.Rectangle && serialized.editorLightShape != LightShape.Tube,
                                 CED.FoldoutGroup(s_Styles.contactShadowsSubHeader, Expandable.ContactShadow, k_ExpandedState, FoldoutOption.SubFoldout | FoldoutOption.Indent | FoldoutOption.NoSpaceAtEnd, DrawContactShadowsContent)
                             ),
-                            CED.Conditional((serialized, owner) => serialized.settings.isBakedOrMixed || serialized.settings.isCompletelyBaked,
+                            CED.Conditional((serialized, owner) => (serialized.settings.isBakedOrMixed || serialized.settings.isCompletelyBaked) && serialized.editorLightShape != LightShape.Rectangle,
                                 CED.space,
                                 CED.FoldoutGroup(s_Styles.bakedShadowsSubHeader, Expandable.BakedShadow, k_ExpandedState, FoldoutOption.SubFoldout | FoldoutOption.Indent | FoldoutOption.NoSpaceAtEnd, DrawBakedShadowsContent))
                             ),
