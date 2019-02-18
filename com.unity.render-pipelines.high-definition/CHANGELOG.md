@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added emissive property for shader graph decals
 
+### Fixed
+- Fixed an issue where scissor render state leaking from the editor code caused partially black rendering
+
 ## [6.2.0-preview] - 2019-02-15
 
 ### Added
