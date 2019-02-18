@@ -1,9 +1,5 @@
 #define HAVE_MESH_MODIFICATION
 
-#if defined(UNITY_INSTANCING_ENABLED) && defined(_TERRAIN_INSTANCED_PERPIXEL_NORMAL)
-    #define ENABLE_TERRAIN_PERPIXEL_NORMAL
-#endif
-
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/FragInputs.hlsl"
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPass.cs.hlsl"
@@ -59,6 +55,10 @@
     #define VARYINGS_NEED_POSITION_WS
     #define VARYINGS_NEED_TANGENT_TO_WORLD
     #define VARYINGS_NEED_TEXCOORD0
+#endif
+
+#if defined(UNITY_INSTANCING_ENABLED) && defined(_TERRAIN_INSTANCED_PERPIXEL_NORMAL)
+    #define ENABLE_TERRAIN_PERPIXEL_NORMAL
 #endif
 
 #ifdef ENABLE_TERRAIN_PERPIXEL_NORMAL
