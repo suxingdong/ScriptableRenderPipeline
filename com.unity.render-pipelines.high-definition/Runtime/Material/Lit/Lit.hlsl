@@ -32,7 +32,7 @@
 // Uncomment this to get speed (to measure), let it comment to get quality
 // #define FORWARD_MATERIAL_READ_FROM_WRITTEN_NORMAL_BUFFER
 
-#define RASTERIZED_AREA_LIGHT_SHADOWS 1
+#define RASTERIZED_AREA_LIGHT_SHADOWS 0
 
 //-----------------------------------------------------------------------------
 // Texture and constant buffer declaration
@@ -106,6 +106,8 @@ TEXTURE2D(_ShadowMaskTexture); // Alias for shadow mask, so we don't need to kno
 #define CLEAR_COAT_ROUGHNESS 0.01
 #define CLEAR_COAT_PERCEPTUAL_SMOOTHNESS RoughnessToPerceptualSmoothness(CLEAR_COAT_ROUGHNESS)
 #define CLEAR_COAT_PERCEPTUAL_ROUGHNESS RoughnessToPerceptualRoughness(CLEAR_COAT_ROUGHNESS)
+
+#define SUPPORTS_RAYTRACED_AREA_SHADOWS (SHADEROPTIONS_RAYTRACING && (SHADERPASS == SHADERPASS_DEFERRED_LIGHTING))
 
 // It is safe to include this file after the G-Buffer macros above.
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/MaterialGBufferMacros.hlsl"
@@ -1586,7 +1588,7 @@ DirectLighting EvaluateBSDF_Rect(   LightLoopContext lightLoopContext,
 
     // TODO_FCC: Move above the shadow bit so that it will skip computation if fully in shadow.
     // TODO: Ray traced shadows don't support shadow masks yet. 
-#if RASTERIZED_AREA_LIGHT_SHADOWS
+#if RASTERIZED_AREA_LIGHT_SHADOWS || SUPPORTS_RAYTRACED_AREA_SHADOWS
     float  shadow = 1.0;
     float  shadowMask = 1.0;
 #ifdef SHADOWS_SHADOWMASK
@@ -1597,7 +1599,7 @@ DirectLighting EvaluateBSDF_Rect(   LightLoopContext lightLoopContext,
 
 #endif
 
-#if SHADEROPTIONS_RAYTRACING == 1 && (SHADERPASS == SHADERPASS_DEFERRED_LIGHTING)
+#if SUPPORTS_RAYTRACED_AREA_SHADOWS
     // We are using the contact shadow index for area light shadow index in case of ray tracing.
     // This should be safe as contact shadows are disabled in area lights and contactShadowIndex
     int rayTracedAreaShadowIndex =  -lightData.contactShadowIndex;
@@ -1620,8 +1622,11 @@ DirectLighting EvaluateBSDF_Rect(   LightLoopContext lightLoopContext,
 
 #endif
     }
+
+#if RASTERIZED_AREA_LIGHT_SHADOWS || SUPPORTS_RAYTRACED_AREA_SHADOWS
     lighting.diffuse *= shadow;
     lighting.specular *= shadow;
+#endif
 
 
 #endif // LIT_DISPLAY_REFERENCE_AREA
