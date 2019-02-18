@@ -245,7 +245,10 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 cmd.SetViewProjectionMatrices(shadowRequest.view, shadowRequest.projection);
 
                 cmd.SetGlobalFloat(HDShaderIDs._ZClip, shadowRequest.zClip ? 1.0f : 0.0f);
-                CoreUtils.DrawFullScreen(cmd, m_ClearMaterial, null, 0);
+                if (!m_LightingDebugSettings.clearShadowAtlas)
+                {
+                    CoreUtils.DrawFullScreen(cmd, m_ClearMaterial, null, 0);
+                }
 
                 dss.lightIndex = shadowRequest.lightIndex;
                 dss.splitData = shadowRequest.splitData;
