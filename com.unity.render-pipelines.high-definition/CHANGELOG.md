@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added emissive property for shader graph decals
 
+### Changed
+- When a lit material has a clear coat mask that is not null, we now use the clear coat roughness to compute the screen space reflection.
+
 ## [6.2.0-preview] - 2019-02-15
 
 ### Added
