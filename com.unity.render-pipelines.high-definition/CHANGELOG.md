@@ -4,6 +4,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [  ] - 
+
+### Added
+
+### Changed
+
+### Fixed
+- Fixed UI issue where all is displayed using metric unit in shadow cascade and Percent is set in the unit field (happening when opening the inspector).
+
+
 ## [6.3.0-preview] - 2019-02-18
 
 ### Added
@@ -19,8 +29,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed decals in forward
 - Fixed issue with stencil not correctly setup for various master node and shader for the depth pass, motion vector pass and GBuffer/Forward pass
 - Fixed SRP batcher and metal
-
-### Fixed
 - Fixed an issue where scissor render state leaking from the editor code caused partially black rendering
 
 ## [6.2.0-preview] - 2019-02-15
