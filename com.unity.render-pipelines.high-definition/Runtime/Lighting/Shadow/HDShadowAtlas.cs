@@ -241,7 +241,16 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
             foreach (var shadowRequest in m_ShadowRequests)
             {
-                cmd.SetViewport(shadowRequest.atlasViewport);
+                Rect bordedViewport = shadowRequest.atlasViewport;
+
+                float safeguard = 2;
+                bordedViewport.xMin = Mathf.Min(0, bordedViewport.xMin - safeguard);
+                bordedViewport.yMin = Mathf.Min(0, bordedViewport.yMin - safeguard);
+                bordedViewport.xMax += safeguard;
+                bordedViewport.yMax += safeguard;
+
+                cmd.SetViewport(bordedViewport);
+
                 cmd.SetViewProjectionMatrices(shadowRequest.view, shadowRequest.projection);
 
                 cmd.SetGlobalFloat(HDShaderIDs._ZClip, shadowRequest.zClip ? 1.0f : 0.0f);

@@ -297,7 +297,7 @@ float EvalShadow_AreaDepth(HDShadowData sd, Texture2D tex, SamplerComparisonStat
     /* get the per sample bias */
     float2 sampleBias = EvalShadow_SampleBias_Persp(positionWS, normalWS, posTC);
 
-    return AREA_FILTER_ALGORITHM(sd, positionSS, posTC, sampleBias, tex, sampComp);
+    return AREA_FILTER_ALGORITHM(sd, positionSS, float3(saturate(posTC.xy), posTC.z), sampleBias, tex, sampComp);
 }
 
 

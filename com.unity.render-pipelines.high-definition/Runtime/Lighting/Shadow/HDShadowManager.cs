@@ -382,11 +382,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
             if (m_CascadeAtlas != null)
                 m_CascadeAtlas.UpdateDebugSettings(lightingDebugSettings);
 
-            // TODO: This is required to avoid problems when we are using a cone to simulate the area light.
-            // This can be handled better.
-            lightingDebugSettings.clearShadowAtlas = true;
             m_AreaLightShadowAtlas.UpdateDebugSettings(lightingDebugSettings);
-
 
             if (lightingDebugSettings.shadowResolutionScaleFactor != 1.0f)
             {
